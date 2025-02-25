@@ -37,6 +37,8 @@ namespace SPG_Fachtheorie.Aufgabe1.Test
             var cashier = new Cashier(1, "Max", "Mustermann", address, "Kassa");
             db.Add(cashier);
             db.SaveChanges();
+            
+            db.ChangeTracker.Clear();
             Assert.True(db.Cashiers.Count() == 1);
         }
 
@@ -52,6 +54,7 @@ namespace SPG_Fachtheorie.Aufgabe1.Test
             db.Add(payment);
             db.SaveChanges();
             
+            db.ChangeTracker.Clear();
             Assert.True(db.Payments.Count() == 1);
         }
 
@@ -65,6 +68,10 @@ namespace SPG_Fachtheorie.Aufgabe1.Test
             db.Add(cashier);
             db.Add(manager);
             db.SaveChanges();
+            
+            db.ChangeTracker.Clear();
+            Assert.True(db.Managers.First().GetType() == typeof(Manager));
+            Assert.True(db.Cashiers.First().GetType() == typeof(Cashier));
             
         }
     }
