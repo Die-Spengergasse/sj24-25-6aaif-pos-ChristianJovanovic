@@ -25,6 +25,10 @@ public class PaymentsController : ControllerBase
     [HttpGet]
     public ActionResult<List<PaymentDto>> GetPayments([FromQuery] int? cashDesk, [FromQuery] DateTime? dateFrom)
     {
+        /*
+         * .Where(p => cashDesk.HasValue ? p.CashDesk.Number == cashDesk.Value : true)
+         * .Where(p => dateFrom.HasValue ? p.PaymentDateTime >= dateFrom.Value : true)
+         */
         return Ok(_db.Payments
             .Where(e => 
                 (cashDesk == null || e.CashDesk.Number == cashDesk) && 
