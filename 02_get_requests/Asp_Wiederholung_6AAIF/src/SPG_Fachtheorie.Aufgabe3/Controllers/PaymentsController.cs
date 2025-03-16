@@ -30,9 +30,8 @@ public class PaymentsController : ControllerBase
          * .Where(p => dateFrom.HasValue ? p.PaymentDateTime >= dateFrom.Value : true)
          */
         return Ok(_db.Payments
-            .Where(e => 
-                (cashDesk == null || e.CashDesk.Number == cashDesk) && 
-                (dateFrom == null || e.PaymentDateTime.Date == dateFrom))
+            .Where(p => cashDesk.HasValue ? p.CashDesk.Number == cashDesk.Value : true)
+            .Where(p => dateFrom.HasValue ? p.PaymentDateTime >= dateFrom.Value : true)
             .Select(e => new PaymentDto(
             e.Id,
             e.Employee.FirstName,
