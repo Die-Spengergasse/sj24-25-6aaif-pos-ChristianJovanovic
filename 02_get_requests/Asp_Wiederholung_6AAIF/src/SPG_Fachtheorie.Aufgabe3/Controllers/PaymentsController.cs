@@ -69,4 +69,8 @@ public class PaymentsController : ControllerBase
         }
         return Ok(payment);
     }
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public ActionResult 
 }
