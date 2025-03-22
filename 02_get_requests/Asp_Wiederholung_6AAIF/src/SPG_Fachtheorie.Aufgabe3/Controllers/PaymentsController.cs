@@ -115,8 +115,34 @@ public class PaymentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType((StatusCodes.Status400BadRequest))]
-    public ActionResult<int> DeletePayment(int id)
+    public ActionResult<int> DeletePayment(int id, [FromQuery] bool? deleteItems)
     {
-        return StatusCodes.Status204NoContent;
+        try
+        {
+            var payment = _db.Payments.FirstOrDefault(p => p.Id == id);
+            if (payment is null)
+            {
+                return NotFound();
+            }
+
+            if (deleteItems is true)
+            {
+                var paymentItems = _db.PaymentItems.Where(p => p.Payment.Id == id).ToList();
+                _db.RemoveRange(paymentItems);
+                _db.Remove(payment);
+                _db.SaveChanges();
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest("Payment has payment items!");
+            }
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }
