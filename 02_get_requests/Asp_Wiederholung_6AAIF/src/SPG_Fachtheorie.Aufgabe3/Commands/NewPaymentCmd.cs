@@ -3,7 +3,7 @@ using SPG_Fachtheorie.Aufgabe1.Model;
 
 namespace SPG_Fachtheorie.Aufgabe3.Commands;
 
-//TODO: Die Validierung von paymentDateTime überarbeiten. Derzeit nicht funktional
+
 public record NewPaymentCmd(
     int cashDeskNumber,
     DateTime paymenDateTime,
