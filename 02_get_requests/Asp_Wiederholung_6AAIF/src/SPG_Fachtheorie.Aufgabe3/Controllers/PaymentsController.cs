@@ -145,4 +145,39 @@ public class PaymentsController : ControllerBase
             throw;
         }
     }
+
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType((StatusCodes.Status204NoContent))]
+
+    public ActionResult UpdatePaymentItem(int id, [FromBody] UpdatePaymentItemCmd paymentItem)
+    {
+        if (id != paymentItem.Id)
+        {
+            return BadRequest("Invalid payment item ID");
+        }
+        var paymentItemDb = _db.PaymentItems.FirstOrDefault(p => p.Id == id);
+        var payment = _db.Payments.FirstOrDefault(p => p.Id == paymentItem.PaymentId);
+        if (paymentItemDb is null)
+        {
+            return NotFound("Payment Item not found");
+        }
+
+        if (paymentItem.LastUpdated != paymentItemDb.LastUpdated)
+        {
+            return BadRequest("Payment item has changed");
+        }
+
+        if (payment is null)
+        {
+            return BadRequest("Invalid payment ID");
+        }
+        paymentItemDb.ArticleName = paymentItem.ArticleName;
+        paymentItemDb.Amount = paymentItem.Amount;
+        paymentItemDb.LastUpdated = DateTime.Now;
+        paymentItemDb.Price = paymentItem.Price;
+        _db.SaveChanges();
+        return NoContent();
+    }
 }
