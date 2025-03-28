@@ -146,7 +146,8 @@ public class PaymentsController : ControllerBase
         }
     }
 
-    [HttpPut("{id}")]
+    //Wichtig: auf die Route achten!
+    [HttpPut("/api/paymentItems/{id}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType((StatusCodes.Status204NoContent))]
@@ -155,30 +156,45 @@ public class PaymentsController : ControllerBase
     {
         if (id != paymentItem.Id)
         {
-            return BadRequest("Invalid payment item ID");
+            return Problem("Invalid payment item ID", statusCode: 400);
         }
         var paymentItemDb = _db.PaymentItems.FirstOrDefault(p => p.Id == id);
         var payment = _db.Payments.FirstOrDefault(p => p.Id == paymentItem.PaymentId);
         if (paymentItemDb is null)
         {
-            return NotFound("Payment Item not found");
+            return Problem("Payment Item not found", statusCode: 404);
         }
 
         if (paymentItem.LastUpdated != paymentItemDb.LastUpdated)
         {
-            return BadRequest("Payment item has changed");
+            return Problem("Payment item has changed", statusCode: 400);
         }
 
         if (payment is null)
         {
-            return BadRequest("Invalid payment ID");
+            return Problem("Invalid payment ID", statusCode: 400);
         }
         paymentItemDb.ArticleName = paymentItem.ArticleName;
         paymentItemDb.Amount = paymentItem.Amount;
-        paymentItemDb.LastUpdated = DateTime.Now;
+        paymentItemDb.LastUpdated = DateTime.UtcNow;
         paymentItemDb.Price = paymentItem.Price;
-        _db.SaveChanges();
+        return TrySave(new NoContentResult());
+       
+        //Wird gesendet wenn der Client bereits alle Informationen hat und nur eine Rückmeldung braucht ob die Aktion erfolgreich war
         return NoContent();
+    }
+
+    private ActionResult TrySave(ActionResult successResult)
+    {
+        try
+        {
+            _db.SaveChanges();
+            return successResult;
+        }
+        catch (Exception e)
+        {
+            return Problem(e.InnerException?.Message ?? e.Message);
+        }
     }
 
     [HttpPatch("{id}")]
@@ -191,15 +207,14 @@ public class PaymentsController : ControllerBase
         var payment = _db.Payments.FirstOrDefault(p => p.Id == id);
         if (payment is null)
         {
-            return NotFound("Payment not found");
+            return Problem("Payment not found", statusCode: 404);
         }
 
         if (payment.Confirmed is not null)
         {
-            return BadRequest("Payment already confirmed");
+            return Problem("Payment already confirmed", statusCode: 400);
         }
-        payment.Confirmed = DateTime.Parse(updateConfirmed.Confirmed);
-        _db.SaveChanges();
-        return NoContent();
+        payment.Confirmed = updateConfirmed.Confirmed;
+        return TrySave(new NoContentResult());
     }
 }
