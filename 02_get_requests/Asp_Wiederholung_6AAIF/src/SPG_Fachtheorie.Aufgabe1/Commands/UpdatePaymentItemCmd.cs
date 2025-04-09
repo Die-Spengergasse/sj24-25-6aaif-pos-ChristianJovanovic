@@ -1,6 +1,7 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace SPG_Fachtheorie.Aufgabe3.Commands;
+namespace SPG_Fachtheorie.Aufgabe1.Commands;
 
 public record UpdatePaymentItemCmd(
     [Range(1, int.MaxValue, ErrorMessage = "Id must be greater than 0")]

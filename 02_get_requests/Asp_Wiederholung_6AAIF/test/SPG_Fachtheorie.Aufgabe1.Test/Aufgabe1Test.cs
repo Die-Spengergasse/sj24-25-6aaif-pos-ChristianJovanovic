@@ -54,7 +54,7 @@ namespace SPG_Fachtheorie.Aufgabe1.Test
             var employee = new Cashier(1001, "fn", "ln", null, "Kassier");
             var cashDesk = new CashDesk(1);
             var payment = new Payment(
-                cashDesk, new DateTime(2025, 2, 21), employee, PaymentType.Cash);
+                cashDesk, new DateTime(2025, 2, 21), employee, PaymentType.Cash, null);
             db.Payments.Add(payment);
 
             // ACT

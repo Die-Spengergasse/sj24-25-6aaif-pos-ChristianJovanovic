@@ -81,7 +81,7 @@ namespace SPG_Fachtheorie.Aufgabe1.Infrastructure
                     var employee = f.Random.ListItem(cashiers);
                     var paymentDateTime = f.Date.Between(new DateTime(2024, 1, 1), new DateTime(2025, 1, 1));
                     var paymentType = f.Random.Enum<PaymentType>();
-                    var payment = new Payment(cashDesk, paymentDateTime, employee, paymentType);
+                    var payment = new Payment(cashDesk, paymentDateTime, employee, paymentType, DateTime.UtcNow);
                     var paymentItems = new Faker<PaymentItem>("de")
                         .CustomInstantiator(f =>
                         {
